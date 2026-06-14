@@ -1,0 +1,368 @@
+/* Add these to your existing App.css */
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.task-card {
+  transition: all 0.2s ease;
+}
+
+.task-card:hover {
+  transform: translateX(4px);
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.badge-primary {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+.badge-warning {
+  background-color: #fecaca;
+  color: #dc2626;
+}
+
+.badge-success {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.badge-neutral {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* client/src/App.css - Updated */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
+/* Main container with proper padding and width control */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  width: 100%;
+}
+
+/* For pages that need full width but with padding */
+.container-fluid {
+  width: 100%;
+  padding: 32px 24px;
+}
+
+/* Page header spacing */
+.page-header {
+  margin-bottom: 32px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.page-header p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Card styling */
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Button styles */
+.button {
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  background: #6b7280;
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: #4b5563;
+}
+
+.button-success {
+  background: #10b981;
+}
+
+.button-success:hover:not(:disabled) {
+  background: #059669;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+  
+  .card {
+    padding: 16px;
+  }
+  
+  .page-header h1 {
+    font-size: 24px;
+  }
+}
+
+/* Narrow container for reading-heavy pages */
+.container-narrow {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  width: 100%;
+}
+
+/* For task lists, keep full width but with padding */
+.task-list {
+  width: 100%;
+}
+
+@media (max-width: 640px) {
+  .container-narrow {
+    padding: 20px 16px;
+  }
+}
+
+/* client/src/App.css - Add dark mode styles */
+
+/* Base dark mode colors */
+.dark {
+  color-scheme: dark;
+}
+
+.dark body {
+  background-color: #111827;
+  color: #f3f4f6;
+}
+
+/* Container dark mode */
+.dark .container,
+.dark .container-narrow {
+  background-color: transparent;
+}
+
+/* Card dark mode */
+.dark .card {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Form elements dark mode */
+.dark .form-group input,
+.dark .form-group textarea {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.dark .form-group input:focus,
+.dark .form-group textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .form-group label {
+  color: #d1d5db;
+}
+
+/* Button dark mode */
+.dark .button {
+  background-color: #3b82f6;
+}
+
+.dark .button-secondary {
+  background-color: #4b5563;
+}
+
+.dark .button-secondary:hover:not(:disabled) {
+  background-color: #374151;
+}
+
+/* Task card dark mode */
+.dark .task-card {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+/* Text colors dark mode */
+.dark h1, .dark h2, .dark h3, .dark h4 {
+  color: #f3f4f6;
+}
+
+.dark p, .dark span {
+  color: #d1d5db;
+}
+
+.dark .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+/* Badges dark mode */
+.dark .badge-neutral {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.dark .badge-primary {
+  background-color: #1e3a8a;
+  color: #bfdbfe;
+}
+
+.dark .badge-warning {
+  background-color: #7f1d1d;
+  color: #fecaca;
+}
+
+.dark .badge-success {
+  background-color: #064e3b;
+  color: #a7f3d0;
+}
+
+/* Email body dark mode */
+.dark .email-body {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+/* Tips box dark mode */
+.dark .tips-box {
+  background-color: #1e3a8a;
+  border-color: #3b82f6;
+}
+
+.dark .tips-box h3 {
+  color: #bfdbfe;
+}
+
+.dark .tips-box ul {
+  color: #dbeafe;
+}
+
+/* Progress bar dark mode */
+.dark .progress-bar-bg {
+  background-color: #374151;
+}
+
+/* Border colors dark mode */
+.dark .border-t,
+.dark .border-b,
+.dark .border-l,
+.dark .border-r {
+  border-color: #374151;
+}
+
+/* Error message dark mode */
+.dark .error-message {
+  background-color: #7f1d1d;
+  border-color: #991b1b;
+  color: #fecaca;
+}
+
+/* Meeting context card dark mode */
+.dark .meeting-context {
+  background-color: #064e3b;
+  border-color: #059669;
+}
+
+.dark .meeting-context p,
+.dark .meeting-context h3 {
+  color: #a7f3d0;
+}
+
+/* Loading spinner dark mode */
+.dark .loading-spinner {
+  border-color: #374151;
+  border-top-color: #3b82f6;
+}
