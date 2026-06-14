@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/meetings'; // Adjust port as needed
+// const API_BASE_URL = 'http://localhost:5000/api/meetings'; // Adjust port as needed
+const API_BASE_URL = 'https://meetingdna.onrender.com/api/meetings'; // Adjust port as needed
 
 const api = axios.create({
   baseURL: API_BASE_URL,

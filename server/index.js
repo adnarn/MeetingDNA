@@ -7,7 +7,10 @@ const draftRoute = require('./routes/meeting')
 const approveRoute = require('./routes/approve')
 
 const app = express()
-app.use(cors())
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://meetingdna.vercel.app'],
+  credentials: true
+}))
 app.use(express.json())
 
 mongoose.connect(process.env.MONGODB_URI)
