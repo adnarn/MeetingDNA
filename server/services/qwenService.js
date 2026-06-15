@@ -13,42 +13,28 @@ const analyzeMeeting = async (transcript) => {
             content: `You are a meeting analyst. Extract structured data from meeting transcripts. 
 Return ONLY valid JSON, no explanation, no markdown, no backticks.`,
           },
-          // In qwenService.js - Updated prompt
           {
             role: "user",
-            content: `Generate personalized follow-up emails for each assignee based on their tasks.
+            content: `Extract structured data from this meeting transcript.
+            
+            CRITICAL DATE RULES:
+            - For deadlines, ALWAYS return an ISO date string (YYYY-MM-DD)
+            - "Friday" means the upcoming Friday from today (${new Date().toISOString().split('T')[0]})
+            - "tomorrow" means ${new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+            - "next week" means ${new Date(Date.now() + 604800000).toISOString().split('T')[0]}
+            - If a specific date like "July 15" is mentioned, use the current year (2026) and return "2026-07-15"
+            - If no clear date, return null
+            
+            Return ONLY valid JSON with these exact fields:
+            - title: a short 3-5 word summary of the meeting
+            - decisions: array of strings
+            - tasks: array of objects with assignee, task, deadline (ISO date string or null)
+            - open_questions: array of strings
+            - next_meeting: ISO date string or null
 
-Context:
-${decisionsText}
+            Today's date is ${new Date().toISOString().split('T')[0]}
 
-Tasks by assignee:
-${assigneesWithTasks}
-
-CRITICAL FORMATTING RULES:
-- DO NOT include any signature like "[Your Name]", "Best regards, [Name]", or any placeholder
-- End each email with just "Best regards" on a new line, nothing after
-- Do not add any name, title, or signature block
-
-For each assignee, draft a professional email that:
-1. References relevant decisions from the meeting
-2. Lists ALL their tasks clearly
-3. Includes deadlines where mentioned
-4. Offers assistance or clarification
-5. Has a warm but professional tone
-6. Ends with "Best regards" on its own line
-
-Return JSON in this exact format:
-{
-  "emails": [
-    {
-      "to": "assignee name",
-      "subject": "Action items from today's meeting",
-      "body": "Hi [Assignee],\n\n[Email content with tasks and context]\n\nBest regards"
-    }
-  ]
-}
-
-Each assignee gets ONE email covering all their tasks. Do not add explanations outside the JSON.`,
+            Transcript: "${transcript}"`
           },
         ],
       },
@@ -61,7 +47,9 @@ Each assignee gets ONE email covering all their tasks. Do not add explanations o
     );
 
     const raw = response.data.choices[0].message.content;
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    
+    return parsed;
   } catch (error) {
     console.error("Qwen error:", error.message);
     throw error;

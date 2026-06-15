@@ -13,8 +13,11 @@ const createMeeting = async (req, res) => {
 
     const result = await analyzeMeeting(transcript)
 
+    // Ensure decisions is always an array
+    const decisions = Array.isArray(result.decisions) ? result.decisions : [];
     
-    const tasksWithDates = result.tasks.map(task => ({
+    // Convert deadline strings to Date objects explicitly
+    const tasksWithDates = (result.tasks || []).map(task => ({
       ...task,
       deadline: task.deadline ? new Date(task.deadline) : null
     }))
@@ -22,10 +25,10 @@ const createMeeting = async (req, res) => {
     const meeting = await Meeting.create({
       title: title || result.title || "Untitled Meeting",
       transcript,
-      decisions: result.decisions,
-      tasks: tasksWithDates,  
-      open_questions: result.open_questions,
-      next_meeting: result.next_meeting,
+      decisions: decisions,
+      tasks: tasksWithDates,
+      open_questions: result.open_questions || [],
+      next_meeting: result.next_meeting || null,
       status: "ready",
     })
 
@@ -34,7 +37,7 @@ const createMeeting = async (req, res) => {
     console.error("Meeting error:", error.message)
     res.status(500).json({ error: "Failed to analyze meeting" })
   }
-}
+};
 
 const getMeetings = async (req, res) => {
   try {
