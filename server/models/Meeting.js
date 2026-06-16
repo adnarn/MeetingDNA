@@ -1,10 +1,15 @@
-// models/Meeting.js
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
-const taskSchema = new mongoose.Schema(
+const meetingSchema = new mongoose.Schema(
   {
+    userId: {  // This should match what you're sending
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "User is required"],
+      index: true,
+    },
+    title: { type: String, default: "Untitled Meeting" },
     transcript: { type: String, required: true },
-    title: { type: String, default: "Untitled Meeting" }, // Added with default
     decisions: [{ type: String }],
     tasks: [
       {
@@ -13,7 +18,7 @@ const taskSchema = new mongoose.Schema(
         deadline: { type: Date, default: null },
         completed: { type: Boolean, default: false },
         completedAt: { type: Date, default: null },
-      }
+      },
     ],
     open_questions: [{ type: String }],
     next_meeting: { type: String, default: null },
@@ -24,6 +29,9 @@ const taskSchema = new mongoose.Schema(
     },
   },
   { timestamps: true }
-)
+);
 
-module.exports = mongoose.model("Meeting", taskSchema)
+// Add compound index for user + createdAt for faster history queries
+meetingSchema.index({ userId: 1, createdAt: -1 });
+
+module.exports = mongoose.model("Meeting", meetingSchema);

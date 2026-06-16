@@ -2,24 +2,30 @@
 const axios = require('axios');
 const Meeting = require('../models/Meeting');
 
-const checkOverdueTasks = async () => {
+const checkOverdueTasks = async (userId = null) => {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Compare at day level only
+  today.setHours(0, 0, 0, 0);
   
+  // Build match condition
+  const matchCondition = {
+    "tasks.deadline": { $ne: null },
+    "tasks.completed": { $ne: true },
+    "tasks.deadline": { $lt: today }
+  };
+  
+  // Add user filter if provided - use 'userId' or 'user' based on your model
+  if (userId) {
+    matchCondition.userId = userId; // Change to 'user' if your model uses 'user'
+  }
+
   const overdueTasks = await Meeting.aggregate([
     { $unwind: "$tasks" },
-    { 
-      $match: { 
-        "tasks.deadline": { $ne: null },
-        "tasks.completed": { $ne: true },
-        "tasks.deadline": { $lt: today }  // Now works because deadline is Date type
-      }
-    },
+    { $match: matchCondition },
     {
       $group: {
         _id: "$_id",
-        meetingTitle: { $first: "$transcript" }, // Or add a title field to schema
-        overdueTasks: { 
+        meetingTitle: { $first: "$title" },
+        overdueTasks: {
           $push: {
             taskId: "$tasks._id",
             task: "$tasks.task",
@@ -34,8 +40,8 @@ const checkOverdueTasks = async () => {
   return overdueTasks;
 };
 
-const generateNudgeEmailsWithQwen = async () => {
-  const overdueMeetings = await checkOverdueTasks();
+const generateNudgeEmails = async (userId = null) => {
+  const overdueMeetings = await checkOverdueTasks(userId);
   
   if (overdueMeetings.length === 0) {
     return [];
@@ -50,7 +56,7 @@ const generateNudgeEmailsWithQwen = async () => {
       }
       overdueByAssignee[task.assignee].push({
         task: task.task,
-        meetingId: meeting._id,
+        meetingTitle: meeting.meetingTitle || "Untitled Meeting",
         deadline: task.deadline
       });
     }
@@ -58,7 +64,7 @@ const generateNudgeEmailsWithQwen = async () => {
 
   // Build prompt for Qwen
   const assigneeContext = Object.entries(overdueByAssignee).map(([assignee, tasks]) => {
-    const taskList = tasks.map(t => 
+    const taskList = tasks.map(t =>
       `- ${t.task} (due ${new Date(t.deadline).toLocaleDateString()})`
     ).join('\n');
     return `Assignee: ${assignee}\nOverdue Tasks:\n${taskList}`;
@@ -141,12 +147,11 @@ Return JSON in this exact format:
     return Object.entries(overdueByAssignee).map(([assignee, tasks]) => ({
       to: assignee,
       subject: "⚠️ Overdue action items",
-      body: `Hi ${assignee},\n\nThe following tasks are overdue:\n\n${tasks.map(t => 
+      body: `Hi ${assignee},\n\nThe following tasks are overdue:\n\n${tasks.map(t =>
         `- ${t.task} (due ${new Date(t.deadline).toLocaleDateString()})`
       ).join('\n')}\n\nPlease prioritize these or let me know if you need support.\n\nBest regards`
     }));
   }
 };
 
-
-module.exports = { checkOverdueTasks, generateNudgeEmailsWithQwen };
+module.exports = { checkOverdueTasks, generateNudgeEmails };

@@ -1,14 +1,32 @@
+// client/src/api/meetingApi.js
 import axios from 'axios';
 
-// const API_BASE_URL = 'http://localhost:5000/api/meetings'; // Adjust port as needed
-const API_BASE_URL = 'https://meetingdna.onrender.com/api/meetings'; // Adjust port as needed
+// Use the default axios instance (which has the auth header from AuthContext)
+// Don't create a new instance - use the default one
+const API_BASE_URL = 'https://meetingdna.onrender.com/api/meetings';
+// const API_BASE_URL = 'http://localhost:5000/api/meetings';
 
+// Create a new instance but intercept requests to add the token
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Add a request interceptor to add the token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Create a new meeting from transcript
 export const createMeeting = async (title, transcript) => {
@@ -35,7 +53,6 @@ export const getMeetings = async () => {
 // Get single meeting by ID (meeting detail page)
 export const getMeeting = async (meetingId) => {
   try {
-    // You'll need to add this endpoint if not exists
     const response = await api.get(`/${meetingId}`);
     return response.data;
   } catch (error) {
@@ -66,7 +83,7 @@ export const markTaskComplete = async (meetingId, taskId) => {
   }
 };
 
-// Optional: Get overdue tasks (for nudge feature)
+// Get overdue tasks (for nudge feature)
 export const getOverdueTasks = async () => {
   try {
     const response = await api.get('/overdue-tasks');

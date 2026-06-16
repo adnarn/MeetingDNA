@@ -1,26 +1,52 @@
-// client/src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
 import MeetingDetail from './pages/MeetingDetail';
 import Emails from './pages/Emails';
 import History from './pages/History';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
 import './App.css'
-import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
   return (
     <ThemeProvider>
-      <Router>
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/meeting/:id" element={<MeetingDetail />} />
-            <Route path="/meeting/:id/emails" element={<Emails />} />
-            <Route path="/history" element={<History />} />
-          </Routes>
-        </div>
+      <Router>  {/* Router MUST be outside AuthProvider */}
+        <AuthProvider>  {/* AuthProvider goes INSIDE Router */}
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+            <Navbar />
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Protected routes */}
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              } />
+              <Route path="/meeting/:id" element={
+                <ProtectedRoute>
+                  <MeetingDetail />
+                </ProtectedRoute>
+              } />
+              <Route path="/meeting/:id/emails" element={
+                <ProtectedRoute>
+                  <Emails />
+                </ProtectedRoute>
+              } />
+              <Route path="/history" element={
+                <ProtectedRoute>
+                  <History />
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </div>
+        </AuthProvider>
       </Router>
     </ThemeProvider>
   );
