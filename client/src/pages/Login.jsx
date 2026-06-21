@@ -93,6 +93,12 @@ const Login = () => {
                 Sign up
               </Link>
             </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+              By logging in, you agree to our{' '}
+              <Link to="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
+                Terms and Conditions
+              </Link>
+            </p>
           </div>
         </div>
       </div>

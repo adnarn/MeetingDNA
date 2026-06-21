@@ -10,6 +10,9 @@ import MeetingDetail from './pages/MeetingDetail';
 import Emails from './pages/Emails';
 import History from './pages/History';
 import './App.css'
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsAndConditions from './pages/TermsAndConditions';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -22,6 +25,8 @@ function App() {
               {/* Public routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsAndConditions />} />
               
               {/* Protected routes */}
               <Route path="/" element={
@@ -45,6 +50,7 @@ function App() {
                 </ProtectedRoute>
               } />
             </Routes>
+            <Footer />
           </div>
         </AuthProvider>
       </Router>
