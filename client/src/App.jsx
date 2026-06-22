@@ -13,8 +13,29 @@ import './App.css'
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import Footer from './components/Footer';
+import { useEffect } from 'react';
 
 function App() {
+  // Check for Zoom token in URL on page load
+useEffect(() => {
+  const queryParams = new URLSearchParams(window.location.search);
+  const token = queryParams.get('token');
+  const zoomConnected = queryParams.get('zoom');
+
+  if (token) {
+    // Save token to localStorage
+    localStorage.setItem('token', token);
+    // Remove from URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // Reload to trigger auth
+    window.location.reload();
+  }
+
+  if (zoomConnected === 'connected') {
+    // Show success message
+    console.log('Zoom connected successfully!');
+  }
+}, []);
   return (
     <ThemeProvider>
       <Router>  {/* Router MUST be outside AuthProvider */}
