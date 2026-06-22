@@ -6,7 +6,7 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 // Get API URL from environment - use the base API URL without /meetings
-const API_URL = import.meta.env.VITE_API_URL || 'https://meetingdna.onrender.com/api/meetings/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://meetingdna.onrender.com/api';
 // const API_URL = 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
