@@ -103,6 +103,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Add refreshUser function to AuthContext
+const refreshUser = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/auth/me`);
+    setUser(response.data.user);
+    return response.data.user;
+  } catch (error) {
+    console.error('Refresh user error:', error);
+    return null;
+  }
+};
+
   const value = {
     user,
     loading,
@@ -110,6 +122,7 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!user,
   };
 
