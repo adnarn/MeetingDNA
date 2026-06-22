@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const draftRoute = require('./routes/meeting')
 const authRoutes = require("./routes/authRoutes");
 const meetingRoutes = require("./routes/meeting");
+const zoomRoutes = require("./routes/zoom");
 
 const app = express()
 app.use(cors({
@@ -23,6 +24,7 @@ mongoose.connection.on('connected', () => {
 app.use("/api/meetings", draftRoute)
 app.use("/api/auth", authRoutes);
 app.use("/api/meetings", meetingRoutes);
+app.use("/auth/zoom", zoomRoutes);
 
 
 app.get('/', (req, res) => {

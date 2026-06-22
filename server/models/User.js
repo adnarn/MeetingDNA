@@ -43,6 +43,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    zoomAccessToken: { type: String, default: null },
+zoomRefreshToken: { type: String, default: null },
   },
   { timestamps: true }
 );

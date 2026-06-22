@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
+import ConnectZoom from './ConnectZoom';
 
 const Navbar = () => {
   const location = useLocation();
@@ -94,12 +95,18 @@ const Navbar = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1">
+               {isDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1">
                     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                     </div>
+                    
+                    {/* Add Zoom Connect in dropdown */}
+                    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                      <ConnectZoom />
+                    </div>
+                    
                     <button
                       onClick={handleLogout}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
