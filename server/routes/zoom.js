@@ -5,7 +5,7 @@ const { zoomCallback, refreshZoomToken, getZoomMeetings, getZoomRecordings } = r
 
 
 // Routes
-router.post("/callback", zoomCallback);
+router.get("/callback", zoomCallback);
 router.post("/refresh", refreshZoomToken);
 router.get("/meetings", getZoomMeetings);
 router.get("/meetings/:meetingId/recordings", getZoomRecordings);
