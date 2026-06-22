@@ -21,10 +21,9 @@ const Navbar = () => {
   const handleLogout = async () => {
     setIsDropdownOpen(false);
     await logout();
-    navigate('/login'); // Navigate after logout
+    navigate('/login');
   };
 
-  // Rest of the component remains the same...
   return (
     <nav className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,14 +94,31 @@ const Navbar = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-               {isDropdownOpen && (
+                {isDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1">
                     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
                     </div>
                     
-                    {/* Add Zoom Connect in dropdown */}
+                    {/* Zoom Status Indicator */}
+                    <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-600 dark:text-gray-300">Zoom Status</span>
+                        {user?.zoomConnected ? (
+                          <span className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                            Connected
+                          </span>
+                        ) : (
+                          <span className="text-xs text-gray-500 dark:text-gray-400">Not connected</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Zoom Connect Button */}
                     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                       <ConnectZoom />
                     </div>
@@ -149,7 +165,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Dropdown */}
         <div className={`md:hidden transition-all duration-300 ease-in-out overflow-hidden ${
-          isMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
+          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
         }`}>
           <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-200 dark:border-gray-700">
             {isAuthenticated ? (
@@ -176,6 +192,29 @@ const Navbar = () => {
                 >
                   📋 History
                 </Link>
+                
+                {/* Mobile Zoom Status */}
+                <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Zoom Status</span>
+                    {user?.zoomConnected ? (
+                      <span className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        Connected
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">Not connected</span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Mobile Zoom Connect Button */}
+                <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                  <ConnectZoom />
+                </div>
+                
                 <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>

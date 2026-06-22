@@ -5,8 +5,7 @@ const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-// Get API URL from environment - use the base API URL without /meetings
-const API_URL = import.meta.env.VITE_API_URL || 'https://meetingdna.onrender.com/api';
+const API_URL =  'https://meetingdna.onrender.com/api';
 // const API_URL = 'http://localhost:5000/api';
 
 export const AuthProvider = ({ children }) => {
@@ -25,28 +24,47 @@ export const AuthProvider = ({ children }) => {
 
   // Load user on mount
   useEffect(() => {
-          const loadUser = async () => {
-        if (!token) {
-          setLoading(false);
-          return;
-        }
+    const loadUser = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-        try {
-          const response = await axios.get(`${API_URL}/auth/me`);
-          // user now has zoomConnected: true/false instead of tokens
-          setUser(response.data.user);
-        } catch (error) {
-          console.error('Load user error:', error);
-          localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
-        } finally {
-          setLoading(false);
-        }
-      };
+      try {
+        const response = await axios.get(`${API_URL}/auth/me`);
+        setUser(response.data.user);
+      } catch (error) {
+        console.error('Load user error:', error);
+        localStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     loadUser();
   }, [token]);
+
+  // ✅ Add refreshUser function
+  const refreshUser = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return null;
+      
+      const response = await axios.get(`${API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      setUser(response.data.user);
+      return response.data.user;
+    } catch (error) {
+      console.error('Refresh user error:', error);
+      return null;
+    }
+  };
 
   // Register user
   const register = async (name, email, password) => {
@@ -104,18 +122,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add refreshUser function to AuthContext
-const refreshUser = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/auth/me`);
-    setUser(response.data.user);
-    return response.data.user;
-  } catch (error) {
-    console.error('Refresh user error:', error);
-    return null;
-  }
-};
-
   const value = {
     user,
     loading,
@@ -123,7 +129,7 @@ const refreshUser = async () => {
     register,
     login,
     logout,
-    refreshUser,
+    refreshUser, // ✅ Add this
     isAuthenticated: !!user,
   };
 

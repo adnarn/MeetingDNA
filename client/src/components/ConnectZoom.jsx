@@ -4,12 +4,13 @@ import { useAuth } from '../context/AuthContext';
 const ConnectZoom = () => {
   const { user, refreshUser } = useAuth();
   const [isConnecting, setIsConnecting] = useState(false);
-  const [isZoomConnected, setIsZoomConnected] = useState(false);
   const [isDisconnecting, setIsDisconnecting] = useState(false);
+  const [isZoomConnected, setIsZoomConnected] = useState(false);
 
-  // Check if Zoom is connected
+  // Check if Zoom is connected - check user.zoomConnected
   useEffect(() => {
-    if (user?.zoomConnected) {
+    console.log('User in ConnectZoom:', user); // Debug log
+    if (user?.zoomConnected === true) {
       setIsZoomConnected(true);
     } else {
       setIsZoomConnected(false);
@@ -27,7 +28,7 @@ const ConnectZoom = () => {
     
     setIsDisconnecting(true);
     try {
-      const response = await fetch('https://meetingdna.onrender.com/api/auth/disconnect-zoom', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/disconnect-zoom`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -49,7 +50,7 @@ const ConnectZoom = () => {
     }
   };
 
-  // ✅ SHOW DISCONNECT BUTTON WHEN CONNECTED
+  // Show connected state with disconnect button
   if (isZoomConnected) {
     return (
       <div className="flex items-center justify-between w-full">
@@ -70,7 +71,7 @@ const ConnectZoom = () => {
     );
   }
 
-  // ✅ SHOW CONNECT BUTTON WHEN NOT CONNECTED
+  // Show connect button
   return (
     <button
       onClick={connectZoom}
