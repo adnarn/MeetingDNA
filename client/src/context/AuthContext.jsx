@@ -25,24 +25,25 @@ export const AuthProvider = ({ children }) => {
 
   // Load user on mount
   useEffect(() => {
-    const loadUser = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+          const loadUser = async () => {
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
-      try {
-        const response = await axios.get(`${API_URL}/auth/me`);
-        setUser(response.data.user);
-      } catch (error) {
-        console.error('Load user error:', error);
-        localStorage.removeItem('token');
-        setToken(null);
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+        try {
+          const response = await axios.get(`${API_URL}/auth/me`);
+          // user now has zoomConnected: true/false instead of tokens
+          setUser(response.data.user);
+        } catch (error) {
+          console.error('Load user error:', error);
+          localStorage.removeItem('token');
+          setToken(null);
+          setUser(null);
+        } finally {
+          setLoading(false);
+        }
+      };
 
     loadUser();
   }, [token]);

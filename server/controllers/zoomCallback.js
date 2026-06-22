@@ -224,9 +224,40 @@ const getZoomRecordings = async (req, res) => {
   }
 };
 
+const disconnectZoom = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+
+    // Remove Zoom tokens
+    user.zoomAccessToken = null;
+    user.zoomRefreshToken = null;
+    user.zoomTokenExpiry = null;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      success: true,
+      message: "Zoom disconnected successfully",
+    });
+  } catch (error) {
+    console.error("Disconnect Zoom error:", error.message);
+    res.status(500).json({
+      success: false,
+      error: "Failed to disconnect Zoom",
+    });
+  }
+};
+
 module.exports = {
   zoomCallback,
   refreshZoomToken,
   getZoomMeetings,
   getZoomRecordings,
+  disconnectZoom,
 };

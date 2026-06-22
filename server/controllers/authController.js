@@ -226,12 +226,12 @@ const refreshToken = async (req, res) => {
   }
 };
 
-// @desc    Get current user
-// @route   GET /api/auth/me
-// @access  Private
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.userId).select("-password -refreshToken");
+    // Exclude sensitive data - NO Zoom tokens in response!
+    const user = await User.findById(req.userId).select(
+      "-password -refreshToken -zoomAccessToken -zoomRefreshToken -zoomTokenExpiry"
+    );
     
     if (!user) {
       return res.status(404).json({
@@ -240,9 +240,22 @@ const getMe = async (req, res) => {
       });
     }
 
+    // Check if Zoom is connected separately
+    const zoomConnected = !!user.zoomAccessToken; // This is safe - just a boolean
+
+    // Also return zoom connected status without exposing tokens
     res.status(200).json({
       success: true,
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        lastLogin: user.lastLogin,
+        createdAt: user.createdAt,
+        zoomConnected: zoomConnected, // ✅ Safe boolean
+      },
     });
   } catch (error) {
     console.error("Get me error:", error);
