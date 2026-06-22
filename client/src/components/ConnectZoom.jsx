@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const ConnectZoom = () => {
   const { user, refreshUser } = useAuth();
@@ -7,9 +8,8 @@ const ConnectZoom = () => {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [isZoomConnected, setIsZoomConnected] = useState(false);
 
-  // Check if Zoom is connected - check user.zoomConnected
+  // Check if Zoom is connected
   useEffect(() => {
-    console.log('User in ConnectZoom:', user); // Debug log
     if (user?.zoomConnected === true) {
       setIsZoomConnected(true);
     } else {
@@ -19,6 +19,7 @@ const ConnectZoom = () => {
 
   const connectZoom = () => {
     setIsConnecting(true);
+    toast.loading('Redirecting to Zoom...', { id: 'zoom-connect' });
     const zoomAuthUrl = `https://zoom.us/oauth/authorize?response_type=code&client_id=${import.meta.env.VITE_ZOOM_CLIENT_ID}&redirect_uri=${encodeURIComponent(import.meta.env.VITE_ZOOM_REDIRECT_URI)}`;
     window.location.href = zoomAuthUrl;
   };
@@ -27,6 +28,8 @@ const ConnectZoom = () => {
     if (!confirm('Are you sure you want to disconnect Zoom?')) return;
     
     setIsDisconnecting(true);
+    toast.loading('Disconnecting Zoom...', { id: 'zoom-disconnect' });
+    
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/disconnect-zoom`, {
         method: 'POST',
@@ -37,20 +40,20 @@ const ConnectZoom = () => {
       });
       
       if (response.ok) {
-        await refreshUser(); // Refresh user data
+        await refreshUser();
         setIsZoomConnected(false);
+        toast.success('Zoom disconnected successfully', { id: 'zoom-disconnect' });
       } else {
-        alert('Failed to disconnect Zoom. Please try again.');
+        toast.error('Failed to disconnect Zoom', { id: 'zoom-disconnect' });
       }
     } catch (error) {
       console.error('Failed to disconnect Zoom:', error);
-      alert('Failed to disconnect Zoom. Please try again.');
+      toast.error('Failed to disconnect Zoom', { id: 'zoom-disconnect' });
     } finally {
       setIsDisconnecting(false);
     }
   };
 
-  // Show connected state with disconnect button
   if (isZoomConnected) {
     return (
       <div className="flex items-center justify-between w-full">
@@ -71,7 +74,6 @@ const ConnectZoom = () => {
     );
   }
 
-  // Show connect button
   return (
     <button
       onClick={connectZoom}

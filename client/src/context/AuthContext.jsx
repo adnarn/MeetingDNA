@@ -53,18 +53,19 @@ export const AuthProvider = ({ children }) => {
       if (!token) return null;
       
       const response = await axios.get(`${API_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      setUser(response.data.user);
-      return response.data.user;
-    } catch (error) {
-      console.error('Refresh user error:', error);
-      return null;
-    }
-  };
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          
+          console.log('Refreshed user:', response.data.user); // Debug log
+          setUser(response.data.user);
+          return response.data.user;
+        } catch (error) {
+          console.error('Refresh user error:', error);
+          return null;
+        }
+      };
 
   // Register user
   const register = async (name, email, password) => {
