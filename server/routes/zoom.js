@@ -9,6 +9,6 @@ router.get("/callback", zoomCallback);
 router.post("/refresh", refreshZoomToken);
 router.get("/meetings", getZoomMeetings);
 router.get("/meetings/:meetingId/recordings", getZoomRecordings);
-router.post("/disconnect-zoom", auth, disconnectZoom);
+router.post("/disconnect-zoom", disconnectZoom);
 
 module.exports = router;
