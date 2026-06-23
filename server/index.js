@@ -10,9 +10,15 @@ const zoomRoutes = require("./routes/zoom");
 
 const app = express()
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://meetingdna.vercel.app'],
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://meetingdna.vercel.app',
+    'https://zoom.us',  // ✅ Add Zoom's domain
+    'https://*.zoom.us', // ✅ Add Zoom's subdomains
+  ],
   credentials: true
-}))
+}));
 app.use(express.json())
 
 mongoose.connect(process.env.MONGODB_URI)
