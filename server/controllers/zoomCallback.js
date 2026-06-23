@@ -257,14 +257,39 @@ const disconnectZoom = async (req, res) => {
 
 const handleZoomWebhook = async (req, res) => {
   try {
-    console.log('📹 Zoom webhook received:', req.body);
+    console.log('📹 Zoom webhook received');
     
-    // Verify secret token (optional but recommended)
-    const secretToken = req.headers['authorization'];
-    // You can validate this against your stored token
+    // ✅ Verify the webhook is from Zoom
+    const secretToken = process.env.ZOOM_WEBHOOK_SECRET_TOKEN;
+    const receivedToken = req.headers['authorization'] || req.headers['x-zoom-signature'];
     
-    const { event, payload } = req.body;
+    // Option 1: Check authorization header
+    if (secretToken && receivedToken) {
+      // Simple check - Zoom sends the token in the authorization header
+      if (receivedToken !== secretToken) {
+        console.log('❌ Invalid webhook token');
+        return res.status(401).json({ 
+          success: false, 
+          error: 'Invalid webhook token' 
+        });
+      }
+    }
     
+    // Option 2: Zoom also includes it in the body
+    const { event, payload, verification_token } = req.body;
+    
+    // Check verification token in body
+    if (secretToken && verification_token && verification_token !== secretToken) {
+      console.log('❌ Invalid verification token');
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Invalid verification token' 
+      });
+    }
+    
+    console.log('✅ Webhook verified successfully');
+    
+    // Handle the event
     if (event === 'recording.completed') {
       await handleRecordingCompleted(payload);
     }
@@ -351,6 +376,9 @@ const handleRecordingCompleted = async (payload) => {
     });
     
     console.log(`✅ Meeting auto-analyzed: ${meeting._id}`);
+    
+    // Optional: Send notification to user
+    // await sendNotification(user.email, meeting);
     
   } catch (error) {
     console.error('Error processing recording:', error.message);
