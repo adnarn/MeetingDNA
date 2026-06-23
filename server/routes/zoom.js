@@ -6,7 +6,8 @@ const {
   refreshZoomToken, 
   getZoomMeetings, 
   getZoomRecordings, 
-  disconnectZoom 
+  disconnectZoom, 
+  handleZoomWebhook
 } = require("../controllers/zoomCallback");
 
 // Public routes
@@ -17,5 +18,7 @@ router.post("/refresh", auth, refreshZoomToken);
 router.get("/meetings", auth, getZoomMeetings);
 router.get("/meetings/:meetingId/recordings", auth, getZoomRecordings);
 router.post("/disconnect-zoom", auth, disconnectZoom);  // ✅ This needs auth middleware
+router.post('/webhook/recording-completed', handleZoomWebhook);
+
 
 module.exports = router;

@@ -13,6 +13,7 @@ import History from './pages/History';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsAndConditions from './pages/TermsAndConditions';
 import { useEffect, useState } from 'react';
+import './App.css'
 
 // Component to handle Zoom redirect
 const ZoomHandler = () => {

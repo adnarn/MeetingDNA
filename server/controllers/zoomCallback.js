@@ -254,10 +254,116 @@ const disconnectZoom = async (req, res) => {
   }
 };
 
+
+const handleZoomWebhook = async (req, res) => {
+  try {
+    console.log('📹 Zoom webhook received:', req.body);
+    
+    // Verify secret token (optional but recommended)
+    const secretToken = req.headers['authorization'];
+    // You can validate this against your stored token
+    
+    const { event, payload } = req.body;
+    
+    if (event === 'recording.completed') {
+      await handleRecordingCompleted(payload);
+    }
+    
+    // Always respond with 200 to acknowledge receipt
+    res.status(200).json({ 
+      success: true, 
+      message: 'Webhook processed successfully' 
+    });
+    
+  } catch (error) {
+    console.error('Webhook error:', error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const handleRecordingCompleted = async (payload) => {
+  try {
+    const { object } = payload;
+    const { 
+      meeting_id, 
+      host_id, 
+      topic, 
+      start_time, 
+      recording_files 
+    } = object;
+    
+    console.log(`📹 Recording completed for: ${topic} (${meeting_id})`);
+    
+    // Find user by Zoom host ID
+    const user = await User.findOne({ zoomUserId: host_id });
+    
+    if (!user) {
+      console.log('❌ User not found for host:', host_id);
+      return;
+    }
+    
+    // Check if already processed
+    const existing = await Meeting.findOne({ 
+      zoomMeetingId: meeting_id,
+      user: user._id 
+    });
+    
+    if (existing) {
+      console.log('⏭️ Meeting already processed:', meeting_id);
+      return;
+    }
+    
+    // Find transcript file
+    const transcriptFile = recording_files?.find(
+      f => f.file_type === 'audio_transcript' || f.recording_type === 'audio_transcript'
+    );
+    
+    if (!transcriptFile) {
+      console.log('📝 No transcript available yet, processing audio...');
+      // You could process audio file here
+      return;
+    }
+    
+    // Fetch transcript content
+    const transcriptResponse = await axios.get(transcriptFile.download_url, {
+      headers: {
+        'Authorization': `Bearer ${user.zoomAccessToken}`
+      }
+    });
+    
+    const transcript = transcriptResponse.data;
+    
+    // Analyze with Qwen
+    const analysis = await analyzeMeeting(transcript);
+    
+    // Save meeting
+    const meeting = await Meeting.create({
+      user: user._id,
+      title: topic || 'Zoom Meeting',
+      transcript: transcript,
+      decisions: analysis.decisions || [],
+      tasks: analysis.tasks || [],
+      open_questions: analysis.open_questions || [],
+      next_meeting: analysis.next_meeting || null,
+      status: 'ready',
+      zoomMeetingId: meeting_id,
+      meetingDate: new Date(start_time),
+    });
+    
+    console.log(`✅ Meeting auto-analyzed: ${meeting._id}`);
+    
+  } catch (error) {
+    console.error('Error processing recording:', error.message);
+  }
+};
+
+
 module.exports = {
   zoomCallback,
   refreshZoomToken,
   getZoomMeetings,
   getZoomRecordings,
   disconnectZoom,
+  handleZoomWebhook,
+  handleRecordingCompleted,
 };
