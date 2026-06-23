@@ -34,13 +34,13 @@ const ConnectZoom = () => {
     toast.loading('Disconnecting Zoom...', { id: 'zoom-disconnect' });
     
     try {
-      const response = await fetch(`${API_URL}/auth/zoom/disconnect-zoom`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(`https://meetingdna.onrender.com/api/auth/zoom/disconnect-zoom`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+    });
       
       if (response.ok) {
         await refreshUser();

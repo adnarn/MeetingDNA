@@ -1,14 +1,21 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
+const { 
+  zoomCallback, 
+  refreshZoomToken, 
+  getZoomMeetings, 
+  getZoomRecordings, 
+  disconnectZoom 
+} = require("../controllers/zoomCallback");
 
-const { zoomCallback, refreshZoomToken, getZoomMeetings, getZoomRecordings, disconnectZoom } = require("../controllers/zoomCallback");
-
-
-// Routes
+// Public routes
 router.get("/callback", zoomCallback);
-router.post("/refresh", refreshZoomToken);
-router.get("/meetings", getZoomMeetings);
-router.get("/meetings/:meetingId/recordings", getZoomRecordings);
-router.post("/disconnect-zoom", disconnectZoom);
+
+// Protected routes (require auth)
+router.post("/refresh", auth, refreshZoomToken);
+router.get("/meetings", auth, getZoomMeetings);
+router.get("/meetings/:meetingId/recordings", auth, getZoomRecordings);
+router.post("/disconnect-zoom", auth, disconnectZoom);  // ✅ This needs auth middleware
 
 module.exports = router;
