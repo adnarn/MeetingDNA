@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 // Get API URL from environment with fallback
-const API_URL = 'https://meetingdna.onrender.com/api';
+const API_URL = 'https://meetingdna.onrender.com';
 
 const ConnectZoom = () => {
   const { user, refreshUser } = useAuth();
