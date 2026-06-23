@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
-// Get API URL from environment with fallback
-const API_URL = 'https://meetingdna.onrender.com/api';
-
 const ConnectZoom = () => {
   const { user, refreshUser } = useAuth();
   const [isConnecting, setIsConnecting] = useState(false);
@@ -34,7 +31,7 @@ const ConnectZoom = () => {
     toast.loading('Disconnecting Zoom...', { id: 'zoom-disconnect' });
     
     try {
-      const response = await fetch(`${API_URL}/auth/disconnect-zoom`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/zoom/disconnect-zoom`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -47,12 +44,11 @@ const ConnectZoom = () => {
         setIsZoomConnected(false);
         toast.success('Zoom disconnected successfully', { id: 'zoom-disconnect' });
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.error || 'Failed to disconnect Zoom', { id: 'zoom-disconnect' });
+        toast.error('Failed to disconnect Zoom', { id: 'zoom-disconnect' });
       }
     } catch (error) {
       console.error('Failed to disconnect Zoom:', error);
-      toast.error('Failed to disconnect Zoom. Please try again.', { id: 'zoom-disconnect' });
+      toast.error('Failed to disconnect Zoom', { id: 'zoom-disconnect' });
     } finally {
       setIsDisconnecting(false);
     }
