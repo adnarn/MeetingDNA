@@ -63,18 +63,24 @@ const register = async (req, res) => {
     user.lastLogin = new Date();
     await user.save({ validateBeforeSave: false });
 
-    res.status(201).json({
-      success: true,
-      token,
-      refreshToken,
-      user: {
+   // In register function
+      const userResponse = {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        isActive: user.isActive,
         lastLogin: user.lastLogin,
-      },
-    });
+        createdAt: user.createdAt,
+        zoomConnected: false, // New users don't have Zoom connected
+      };
+
+      res.status(201).json({
+        success: true,
+        token,
+        refreshToken,
+        user: userResponse,
+      });
   } catch (error) {
     console.error("Register error:", error);
     res.status(500).json({
@@ -136,18 +142,23 @@ const login = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
 
-    res.status(200).json({
-      success: true,
-      token,
-      refreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        lastLogin: user.lastLogin,
-      },
-    });
+    const userResponse = {
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  isActive: user.isActive,
+  lastLogin: user.lastLogin,
+  createdAt: user.createdAt,
+  zoomConnected: !!(user.zoomAccessToken && user.zoomAccessToken !== 'null'),
+};
+
+res.status(200).json({
+  success: true,
+  token,
+  refreshToken,
+  user: userResponse,
+});;
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({
@@ -226,12 +237,13 @@ const refreshToken = async (req, res) => {
   }
 };
 
+// @desc    Get current user
+// @route   GET /api/auth/me
+// @access  Private
 const getMe = async (req, res) => {
   try {
-    // Exclude sensitive data - NO Zoom tokens in response!
-    const user = await User.findById(req.userId).select(
-      "-password -refreshToken -zoomAccessToken -zoomRefreshToken -zoomTokenExpiry"
-    );
+    // First get the user WITHOUT excluding zoomAccessToken so we can check it
+    const user = await User.findById(req.userId);
     
     if (!user) {
       return res.status(404).json({
@@ -240,22 +252,28 @@ const getMe = async (req, res) => {
       });
     }
 
-    // Check if Zoom is connected separately
-    const zoomConnected = !!user.zoomAccessToken; // This is safe - just a boolean
+    // Check if Zoom is connected by checking if token exists AND is not null
+    const zoomConnected = !!(user.zoomAccessToken && user.zoomAccessToken !== 'null' && user.zoomAccessToken.length > 0);
 
-    // Also return zoom connected status without exposing tokens
+    console.log('User ID:', user._id);
+    console.log('Zoom token exists:', !!user.zoomAccessToken);
+    console.log('Zoom connected:', zoomConnected);
+
+    // Now create the response object without exposing tokens
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      zoomConnected: zoomConnected, // ✅ Proper boolean
+    };
+
     res.status(200).json({
       success: true,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        isActive: user.isActive,
-        lastLogin: user.lastLogin,
-        createdAt: user.createdAt,
-        zoomConnected: zoomConnected, // ✅ Safe boolean
-      },
+      user: userResponse,
     });
   } catch (error) {
     console.error("Get me error:", error);
